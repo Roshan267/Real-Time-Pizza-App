@@ -7,6 +7,8 @@ const expressLayout = require('express-ejs-layouts');
 
 const PORT = process.env.PORT || 3000
 
+//Assets it is used for to connect the css on the sever 
+app.use(express.static('Public'))
 app.get('/', (req,res)=>{
 
     res.render('home');
