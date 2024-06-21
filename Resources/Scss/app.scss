@@ -29,10 +29,10 @@ section.hero{
 }
 
 
-section.hero  button{
+  .btn-primary{
    background: $primary;
-   width: 100px;
-   color: $pure;
+   
+   transition: $smooth;
    &:hover{
       background: $primary-hover;
    }
@@ -52,3 +52,24 @@ section.hero  button{
       color: $pure;
    }
 }
+
+section.cart{
+   background: $secondary;
+
+   .amount{
+      color: $primary;
+   }
+}
+
+section.login{
+   background: $secondary;
+   min-height: calc(100vh - 86px);
+
+   a{
+      color: $primary;
+      &:hover{
+         color: $primary-hover;
+      }
+   }
+}
+
