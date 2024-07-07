@@ -284,6 +284,9 @@ section.hero {
   border-color: #fff;
   color: #fff;
 }
+.add-to-cart:focus {
+  outline: none;
+}
 
 section.cart {
   background: #F8F8F8;
@@ -306,4 +309,4 @@ section.login a:hover {
 .noty_theme__mint {
   border-radius: 50px !important;
   padding-left: 8px !important;
-}
+}/*# sourceMappingURL=app.css.map */

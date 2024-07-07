@@ -7,16 +7,22 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "serve": "nodemon server.js"
-    
-    
   },
   "author": "Roshan khorate",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.2",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-ejs-layouts": "^2.5.1",
-    "nodemon": "^3.1.3"
+    "express-flash": "^0.0.2",
+    "express-session": "^1.18.0",
+    "mongodb": "^6.7.0",
+    "mongoose": "^8.4.4",
+    "nodemon": "^3.1.3",
+    "noty": "^3.2.0-beta-deprecated"
   },
   "devDependencies": {
     "laravel-mix": "^6.0.49",

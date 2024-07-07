@@ -1,47 +1,68 @@
+require('dotenv').config();
 const express = require('express');
-
 const app = express();
 const ejs = require('ejs');
 const path = require('path');
 const expressLayout = require('express-ejs-layouts');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongo'); // Updated import for connect-mongo
+const flash = require('express-flash');
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000
+// Database connection
+const url = 'mongodb://localhost:27017/Pizza';
 
-//Assets it is used for to connect the css on the sever 
-app.use(express.static('Public'))
+mongoose.connect(url)
+.then(() => {
+  console.log('Database connected...');
+})
+.catch(err => {
+  console.error('Connection failed...', err);
+});
 
+const connection = mongoose.connection;
 
+connection.once('open', () => {
+  console.log('Connection to database is open...');
+});
 
+// Assets
+app.use(express.static('Public'));
+app.use(express.json())
 
-// set template engine 
+// Session store
+const mongoStore = new MongoStore({
+  mongoUrl: url,
+  collectionName: 'sessions'
+});
 
+// Session config
+app.use(session({
+  secret: process.env.COOKIE_SECRET || 'default-secret', // Ensure COOKIE_SECRET is set in your .env file
+  resave: false,
+  saveUninitialized: false,
+  store: mongoStore,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
+}));
+
+app.use(flash());
+
+// Global middleware
+
+app.use((req,res,next)=>{
+  res.locals.session = req.session
+  next() // used to proceed the request
+})
+
+// Set template engine
 app.use(expressLayout);
-app.set('views', path.join(__dirname,'/resources/views'))
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '/resources/views'));
 
-app.get('/', (req,res)=>{
+// Routes
+require('./Routes/web')(app);
 
-    res.render('home');
-
-})
-
-app.get('/cart', (req,res)=>{
-
-    res.render('customer/cart');
-
-})
-app.get('/login', (req,res)=>{
-
-    res.render('auth/login');
-
-})
-app.get('/register', (req,res)=>{
-
-    res.render('auth/register');
-
-})
-
-
-app.listen(PORT, () =>{
-    console.log(`listening on port ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
