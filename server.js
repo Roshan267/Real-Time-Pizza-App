@@ -8,16 +8,15 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo'); // Updated import for connect-mongo
 const flash = require('express-flash');
+const passport = require('passport');
 const PORT = process.env.PORT || 3000;
 
 // Database connection
 const url = 'mongodb://localhost:27017/Pizza';
 
-mongoose.connect(url)
-.then(() => {
+mongoose.connect(url).then(() => {
   console.log('Database connected...');
-})
-.catch(err => {
+}).catch(err => {
   console.error('Connection failed...', err);
 });
 
@@ -28,11 +27,12 @@ connection.once('open', () => {
 });
 
 // Assets
-app.use(express.static('Public'));
-app.use(express.json())
+app.use(express.static('public'));
+app.use(express.json()); // used to convert the data from JSON file specifically while adding data somewhere else
+app.use(express.urlencoded({ extended: false })); // used to show data of register page
 
 // Session store
-const mongoStore = new MongoStore({
+const mongoStore = MongoStore.create({
   mongoUrl: url,
   collectionName: 'sessions'
 });
@@ -48,12 +48,18 @@ app.use(session({
 
 app.use(flash());
 
-// Global middleware
+// Passport configuration   (it must be declared after session config)
+const passportInit = require('./app/config/passport');
+passportInit(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use((req,res,next)=>{
-  res.locals.session = req.session
-  next() // used to proceed the request
-})
+// Global middleware
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  res.locals.user = req.user;
+  next(); // used to proceed the request
+});
 
 // Set template engine
 app.use(expressLayout);
@@ -61,7 +67,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/resources/views'));
 
 // Routes
-require('./Routes/web')(app);
+require('./routes/web')(app);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
