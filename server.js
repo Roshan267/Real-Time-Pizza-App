@@ -9,16 +9,19 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo'); // Updated import for connect-mongo
 const flash = require('express-flash');
 const passport = require('passport');
+const Emitter = require('events');
 const PORT = process.env.PORT || 3000;
 
 // Database connection
-const url = 'mongodb://localhost:27017/Pizza';
+const url = process.env.MONGO_URL || 'mongodb://localhost:27017/Pizza';
 
-mongoose.connect(url).then(() => {
-  console.log('Database connected...');
-}).catch(err => {
-  console.error('Connection failed...', err);
-});
+mongoose.connect(url)
+  .then(() => {
+    console.log('Database connected...');
+  })
+  .catch(err => {
+    console.error('Connection failed...', err);
+  });
 
 const connection = mongoose.connection;
 
@@ -28,8 +31,8 @@ connection.once('open', () => {
 
 // Assets
 app.use(express.static('public'));
-app.use(express.json()); // used to convert the data from JSON file specifically while adding data somewhere else
-app.use(express.urlencoded({ extended: false })); // used to show data of register page
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: false })); // Parse URL-encoded bodies
 
 // Session store
 const mongoStore = MongoStore.create({
@@ -37,7 +40,11 @@ const mongoStore = MongoStore.create({
   collectionName: 'sessions'
 });
 
-// Session config
+// Event emitter
+const eventEmitter = new Emitter();
+app.set('eventEmitter', eventEmitter);
+
+// Session configuration
 app.use(session({
   secret: process.env.COOKIE_SECRET || 'default-secret', // Ensure COOKIE_SECRET is set in your .env file
   resave: false,
@@ -48,7 +55,7 @@ app.use(session({
 
 app.use(flash());
 
-// Passport configuration   (it must be declared after session config)
+// Passport configuration
 const passportInit = require('./app/config/passport');
 passportInit(passport);
 app.use(passport.initialize());
@@ -58,7 +65,7 @@ app.use(passport.session());
 app.use((req, res, next) => {
   res.locals.session = req.session;
   res.locals.user = req.user;
-  next(); // used to proceed the request
+  next(); // Proceed the request
 });
 
 // Set template engine
@@ -69,6 +76,30 @@ app.set('views', path.join(__dirname, '/resources/views'));
 // Routes
 require('./routes/web')(app);
 
-app.listen(PORT, () => {
+app.use((req, res) => {
+  res.status(404).render('errors/404');
+});
+
+// Start server
+const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
+});
+
+// Socket.io setup
+const io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+  // Join a room
+  socket.on('join', (orderId) => {
+    socket.join(orderId);
+  });
+});
+
+// Event listeners for socket.io
+eventEmitter.on('orderUpdated', (data) => {
+  io.to(`order_${data.id}`).emit('orderUpdated', data);
+});
+
+eventEmitter.on('orderPlaced', (data) => {
+  io.to('adminRoom').emit('orderPlaced', data);
 });

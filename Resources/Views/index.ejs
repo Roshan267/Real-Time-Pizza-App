@@ -7,52 +7,58 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
     <link rel="stylesheet" href="/css/app.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@300;0,400;0,700;0,&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@300;0,400;0,700;&display=swap" rel="stylesheet">
 </head>
 <body> 
-    
-
-    <section class="hero py-16">
+    <section class="hero py-16 backgroung-/images/hero.jpg" >
         <div class="container mx-auto flex items-center justify-between">
             <div class="px-4 w-1/2">
-                <h6 class="text-lg"><em>Are you hungry?</em></h6>
-                <h1 class="text-6xl font-bold mt-4">Don't Wait !!</h1>
-                <button class="btn-primary rounded-full px-6 font-bold py-2 text-white font-bold mt-4">Order Now</button>
+                <h6 class="text-lg"><em><i>Are You Hungry?</i></em></h6>
+                <h1 class="animate-typing  text-3xl md:text-6xl font-bold mt-4"><i>Just Click On !!</i> </h1>
+                <a href="#menu">
+                    <button class="btn-primary rounded-full px-6 font-bold py-2 text-white font-bold mt-4">Order Now</button>
+                </a>
             </div>
-            <div class="w-1/2  rotate-90">
-                <img src="/images/hero-pizza.png" alt="">
+            <div class="w-1/2  skew-y-12  drop-shadow-2xl ">
+                <img src="/images/del12.png" alt="Hero Pizza">
             </div>
         </div>
     </section>
     
-    <section class="menu container mx-auto py-8">
+    <section class="menu container mx-auto py-8" id="menu">
         <h1 class="text-xl font-bold mb-8">All Pizzas</h1>
-        <div class="grid grid-cols-4 col-gap-16 row-gap-16 ">
-    
-              <% pizzas.forEach(function(pizza){ %>
-                <div class="w-64 mt-8">
-                    <img class="h-40 mb-4 mx-auto" src="/images/<%=pizza.image%>" alt="">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16">
+            <% pizzas.forEach(function(pizza) { %>
+                <div class="w-full md:w-64 mt-8">
+                    <img class="mix-blend-multiply h-40 mb-4 mx-auto " src="/images/<%= pizza.image %>" alt="<%= pizza.name %>">
                     <div class="text-center">
-                        <h2 class="mb-4 text-lg"><%= pizza.name%></h2>
-                        <span class="size py-1 px-4 rounded-full uppercase text-x"><%= pizza.size %></span>
+                        <h2 class="mb-4 text-lg"><%= pizza.name %></h2>
+                        <span class="size py-1 px-4 rounded-full uppercase text-xs"><%= pizza.size %></span>
                         <div class="flex items-center justify-around mt-6">
                             <span class="font-bold text-lg">₹<%= pizza.price %></span>
-                            <button data-pizza = <%= JSON.stringify(pizza) %> class="add-to-cart py-1 px-6 rounded-full flex items-center font-bold">
+                            <button data-pizza='<%= JSON.stringify(pizza) %>' class="add-to-cart py-1 px-6 rounded-full flex items-center font-bold cursor-grab">
                                 <span>+</span>
                                 <span class="ml-4">Add</span>
                             </button>
                         </div>
                     </div>
                 </div>  
-                         
-           <% })%>
-           
-          
-           
-
-            
+            <% }) %>
         </div>
     </section>
+    <footer>
+        <div class="footer2">
+            <div class="footer21"><i>The Pizza Delivery Experts!!</i></div>
+            <span><i>Follow us on various platforms for the latest updates!!</i></span>
+            <div class="footer22 ">
+               <a href="https://www.facebook.com/roshan.khorate.9?mibextid=ZbWKwL"> <i class="fa-brands fa-facebook social  last"></i></a>
+               <a href="https://x.com/khorate_roshan?t=aMnntOSq0RiC-rWNO7SgRg&s=08"> <i class="fa-brands fa-twitter social last"></i></a>
+                <a href="https://www.instagram.com/r.o.s.h.a.n._26?igsh=MWx3ZGxrZGg0MGcyNw=="><i class="fa-brands fa-instagram social last"></i></a>
+                <a href="https://youtube.com/@roshankhorate5036?feature=shared"><i class="fa-brands fa-youtube social last"></i></a>
+        
+            </div>
+        </div>
+    </footer>
     <script src="/js/app.js"></script>
 </body>
 </html>
